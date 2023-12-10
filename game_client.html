@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energy Game Client</title>
+</head>
+<body>
+    <h1>Energy Development Game</h1>
+    <p>Role: <span id="role"></span></p>
+    <label>Capacity by 2035: <input type="number" id="capacity_2035"></label><br>
+    <label>Capacity by 2050: <input type="number" id="capacity_2050"></label><br>
+    <button onclick="submitDecision()">Submit Decision</button>
+    
+    <script>
+        const websocket = new WebSocket('ws://localhost:8767/');
+        const roleEl = document.getElementById('role');
+
+        websocket.onopen = () => {
+            const role = prompt("Enter your role (citizen, government, energy developer):");
+            roleEl.innerText = role;
+            websocket.send(role);
+        };
+
+        websocket.onmessage = (event) => {
+            const gameState = JSON.parse(event.data);
+            console.log(gameState);
+            // Handle game updates and display them to users
+        };
+
+        function submitDecision() {
+            const decision_2035 = document.getElementById('capacity_2035').value;
+            const decision_2050 = document.getElementById('capacity_2050').value;
+            websocket.send(JSON.stringify({
+                'decision': {
+                    '2035': decision_2035,
+                    '2050': decision_2050
+                }
+            }));
+        }
+    </script>
+</body>
+</html>
